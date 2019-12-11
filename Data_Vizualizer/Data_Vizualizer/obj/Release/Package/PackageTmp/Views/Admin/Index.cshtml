@@ -1,0 +1,45 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Admin</title>
+</head>
+<body>
+    @if (ViewBag.Starter == 0)
+    {
+        <div>
+            <form action="/Admin/Index" method="post">
+                <p>Login</p>
+                <input type="text" name="uname"><br />
+                <input type="password" name="pass"><br />
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    }
+    @if (ViewBag.Show == 1)
+    {
+        <div>
+            <form action="/Feedbacks/Index" method="get">
+                <button type="submit">Feedbacks</button>
+            </form>
+        </div>
+        <div>
+            <form action="/AppUsers/Index" method="get">
+                <button type="submit">Users</button>
+            </form>
+        </div>
+    }
+    @if (ViewBag.ErrMes != null)
+    {
+        <div>
+            @ViewBag.ErrMes
+        </div>
+    }
+</body>
+</html>

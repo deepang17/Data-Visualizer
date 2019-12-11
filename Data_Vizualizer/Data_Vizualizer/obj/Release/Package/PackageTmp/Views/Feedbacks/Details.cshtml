@@ -1,0 +1,50 @@
+﻿@model Data_Vizualizer.Models.Feedbacks
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Feedbacks</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Names)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Names)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Date)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FeedBack)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FeedBack)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Typeof)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Typeof)
+        </dd>
+
+    </dl>
+</div>
+<p>
+
+    @Html.ActionLink("Back to List", "Index")
+</p>

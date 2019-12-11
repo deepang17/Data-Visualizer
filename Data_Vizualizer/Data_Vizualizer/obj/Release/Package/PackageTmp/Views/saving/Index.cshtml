@@ -1,0 +1,73 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+<script>
+    $(document).ready(function () {
+        console.log("hello");
+        drawShapes();
+    });
+
+</script>
+<script>
+    function drawShapes() {
+
+        var canvas = document.getElementById("SigCnv");
+
+        var context = canvas.getContext("2d");
+
+        context.fillStyle = "Blue";
+
+        context.fillRect(0, 0, 200, 200);
+
+        context.beginPath();
+
+        context.lineWidth = "4";
+
+        context.strokeStyle = "Green";
+
+        context.fillStyle = "Yellow";
+
+        context.arc(150, 100, 50, 20, Math.PI * 2, false);
+
+        context.stroke();
+
+        context.fill();
+
+    }
+</script>
+
+<form id="form1" runat="server">
+    <div>
+        <canvas id="SigCnv" name="SigCnv" width="250" height="250" style="border: solid;"></canvas>
+        <input type="text" id="inText"/>
+        <input type="button" id="btnSave" name="btnSave" value="Save the canvas to server" />
+        <script type="text/javascript">
+
+            // Send the canvas image to the server.
+
+            $(function () {
+                $("#btnSave").click(function () {
+                    var image = document.getElementById("SigCnv").toDataURL("image/png");
+                    var intext = document.getElementById("inText").value;
+                    image = image.replace('data:image/png;base64,', '');
+                    $.ajax({
+                        type: 'POST',
+                        url: '/saving/Index',
+                        data: '{ "imageData" : "' + image + '" , "inText":"' + intext + '"}',
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (msg) {
+                            alert('Image saved successfully !');
+                        }
+                    });
+                    alert("Image saved successfully");
+                });
+            });
+        </script>
+    </div>
+</form>
+
+

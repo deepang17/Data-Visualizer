@@ -1,0 +1,2 @@
+C:\Users\Deepang\OneDrive\Desktop\checker\Data_Vizualizer1\Data_Vizualizer\Data_Vizualizer.Tests\obj\Debug\Data_Vizualizer.Tests.csprojAssemblyReference.cache
+C:\Users\Deepang\OneDrive\Desktop\checker\Data_Vizualizer1\Data_Vizualizer\Data_Vizualizer.Tests\obj\Debug\Data_Vizualizer.Tests.csproj.CoreCompileInputs.cache

@@ -1,0 +1,85 @@
+﻿@model IEnumerable<Data_Vizualizer.Models.Feedbacks>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Reviews</h2>
+
+
+
+@foreach (var item in Model)
+{
+    if (item.Typeof == "Good")
+    {
+        <table class="table">
+            <tr>
+                <td colspan="4" align="center" style="background-color:lawngreen; color:black">POSITIVE REVIEW</td>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Names)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Date)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FeedBack)
+                </th>
+
+                <th></th>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Names)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FeedBack)
+                </td>
+                <td>
+
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                </td>
+            </tr>
+        </table>
+    }
+    else if (item.Typeof == "Bad")
+    {
+        <table class="table">
+            <tr>
+                <td colspan="4" align="center" style="background-color:tomato; color:black">NEGATIVE REVIEW</td>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Names)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Date)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FeedBack)
+                </th>
+
+                <th></th>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Names)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FeedBack)
+                </td>
+                <td>
+
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                </td>
+            </tr>
+        </table>
+    }
+}

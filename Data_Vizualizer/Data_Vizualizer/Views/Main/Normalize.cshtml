@@ -1,0 +1,720 @@
+﻿@using System.Data;
+@{
+                /**/
+
+                /**/
+
+                ViewBag.Title = "Normalize";
+}
+
+<h2>Normalize</h2>
+<style type="text/css">
+    /* Generic Styling, for Desktops/Laptops */
+    body {
+        background-color: white;
+    }
+
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 300px;
+    }
+    /* Zebra striping */
+    tr:nth-of-type(odd) {
+        background: #eee;
+    }
+
+    th {
+        background: #333;
+        color: white;
+        font-weight: bold;
+    }
+
+    td, th {
+        padding: 6px;
+        border: 1px solid #ccc;
+        text-align: left;
+    }
+    /*
+    Max width before this PARTICULAR table gets nasty
+    This query will take effect for any screen smaller than 760px
+    and also iPads specifically.
+    */
+    @@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+        /* Force table to not be like tables anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+            /* Hide table headers (but not display: none;, for accessibility) */
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+        tr {
+            border: 1px solid #ccc;
+        }
+
+        td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%;
+        }
+
+            td:before {
+                /* Now like a table header */
+                position: absolute;
+                /* Top/left values mimic padding */
+                top: 6px;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+            }
+            /*
+     Label the data
+     */
+            td:before {
+                content: attr(data-title);
+            }
+    }
+</style>
+@Scripts.Render("~/bundles/jquery")
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<form action="/Main/Normalize" method="post">
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputGroupSelect01">Options</label>
+        </div>
+        <select class="custom-select" name="nmeth" id="NormalizationMethod">
+            <option value="Decimal Scaling">Decimal Scaling</option>
+            <option value="Min Max">Min Max Normalization</option>
+            <option value="z score">Z-Score Normalization</option>
+        </select>
+    </div>
+
+    <div id="ds"></div>
+    <div id="mm">
+    </div>
+    <div id="zs"></div>
+    <button type="submit" class="btn btn-primary" id="subButton">Normalize</button>
+
+</form>
+<form action="/Main/ReturnToGraph" method="post">
+    <button type="submit" class="btn btn-primary" id="subButton">Proceed</button>
+</form>
+<div style="margin-top:20px;margin-bottom:10px"><b>Actual Graph:-</b></div>
+<div id="chartContainer" style="height: 370px; width: 100%;">The Graph Will Arrive Here.</div>
+<div style="margin-top:20px;margin-bottom:10px"><b>Normalized Graph:-</b></div>
+<div id="chartContainer1" style="height: 370px; width: 100%;">The Graph Will Arrive Here.</div>
+<script>
+    window.onload = function () {
+        $("#ds").show();
+        $("#mm").hide();
+        $("#zs").hide();
+    };
+    $(function () {
+        $("#NormalizationMethod").change(function () {
+            var sel = $(this).children("option:selected").val();
+            if (sel == "Min Max") {
+                $("#mm").show();
+                $("#ds").hide();
+                $("#zs").hide();
+            }
+            if (sel == "Decimal Scaling") {
+                $("#ds").show();
+                $("#mm").hide();
+                $("#zs").hide();
+            }
+            if (sel == "z score") {
+                $("#zs").show();
+                $("#mm").hide();
+                $("#ds").hide();
+            }
+        });
+    });
+</script>
+@{
+    if (ViewBag.DataPoints1 != null)
+    {
+        //now just plot the graph
+        if (ViewBag.Types == "scatter" && ViewBag.Sflag == 0)
+        {
+            <script>
+           $( function s2() {
+
+                var chart = new CanvasJS.Chart("chartContainer", {
+                    animationEnabled: true,
+                    theme: "light2",
+                    zoomEnabled: true,
+                    title: {
+                        text: "Scatter Plot",
+                        fontSize: 20
+                    },
+                    subtitles: [{
+                        text: "Hover on the points to see the coordinates.",
+                        fontSize: 13
+                    }],
+                    axisX: {
+                        title: "@ViewBag.xa",
+                        titleFontSize: 13
+                    },
+                    axisY: {
+                        title: "@ViewBag.ya",
+                        titleFontSize: 13
+                    },
+                    data: [{
+                        type: "@ViewBag.Types",
+                        toolTipContent: "<b>@ViewBag.xa: </b>{x} <br/><b>@ViewBag.ya: </b> {y}",
+                        dataPoints: @Html.Raw(ViewBag.DataPoints1)
+                    }]
+                });
+                chart.render();
+
+            } );
+            </script>
+        }
+        else if (ViewBag.Types == "column")
+        {
+            <script>
+           $( function s2() {
+
+                var chart = new CanvasJS.Chart("chartContainer", {
+                    theme: "light2",
+                    animationEnabled: true,
+                    title: {
+                        text: "Column Chart"
+                    },
+                    data: [
+                        {
+                            type: "@ViewBag.Types",
+                            /*dataPoints: [
+                                { y: 6, label: "Apple" },
+                                { y: 4, label: "Mango" },
+                                { y: 5, label: "Orange" },
+                                { y: 7, label: "Banana" },
+                                { y: 4, label: "Pineapple" },
+                                { y: 6, label: "Pears" },
+                                { y: 7, label: "Grapes" },
+                                { y: 5, label: "Lychee" },
+                                { y: 4, label: "Jackfruit" }
+                            ],*/
+
+                            //You can add dynamic data from the controller as shown below. Check the controller and uncomment the line which generates dataPoints.
+                            dataPoints: @Html.Raw(ViewBag.DataPoints1),
+                        }
+                    ]
+                });
+                chart.render();
+            });
+            </script>
+        }
+        else if (ViewBag.Types == "pie")
+        {
+            <script>
+           $( function s2() {
+
+                var chart = new CanvasJS.Chart("chartContainer", {
+            title: {
+                text: "Pie Chart"
+            },
+            animationEnabled: true,
+            legend: {
+                verticalAlign: "center",
+                horizontalAlign: "left",
+                fontSize: 20,
+                fontFamily: "Helvetica"
+            },
+            theme: "light2",
+            data: [
+            {
+                type: "@ViewBag.Types",
+                indexLabelFontFamily: "Garamond",
+                indexLabelFontSize: 20,
+                indexLabel: "{label} {y}%",
+                startAngle: -20,
+                showInLegend: true,
+                toolTipContent: "{legendText} {y}%",
+                /*dataPoints: [
+                    { y: 72.48, legendText: "Google", label: "Google" },
+                    { y: 10.39, legendText: "Bing", label: "Bing" },
+                    { y: 7.78, legendText: "Yahoo!", label: "Yahoo!" },
+                    { y: 7.14, legendText: "Baidu", label: "Baidu" },
+                    { y: 0.22, legendText: "Ask", label: "Ask" },
+                    { y: 0.15, legendText: "AOL", label: "AOL" },
+                    { y: 1.84, legendText: "Others", label: "Others" }
+                ],*/
+
+                //You can add dynamic data from the controller as shown below. Check the controller and uncomment the line which generates dataPoints.
+                dataPoints: @Html.Raw(ViewBag.DataPoints1),
+            }]
+        });
+        chart.render();
+        });
+            </script>
+        }
+        else if (ViewBag.Types == "splineArea")
+        {
+            <script>
+           $( function s2() {
+               
+                var a = "@ViewBag.DataPoints1";
+                var arr = JSON.parse(a.replace(/&quot;/g, '"'));
+                function SortByX(X, Y) {
+                    return X.x - Y.x;
+                }
+                arr.sort(SortByX);
+                var chart = new CanvasJS.Chart("chartContainer", {
+            title: {
+                text: "Spline Area Chart"
+            },
+            animationEnabled: true,
+            axisY: {
+                title: "@ViewBag.ya",
+                valueFormatString: "#0,,.",
+                suffix: ""
+            },
+            data: [
+			{
+			    toolTipContent: "{y} @ViewBag.ya",
+			    type: "splineArea",
+			    markerSize: 5,
+			    color: "rgba(54,158,173,.7)",
+			    /*dataPoints: [
+				{ x: new Date(1992, 0), y: 2506000 },
+				{ x: new Date(1993, 0), y: 2798000 },
+				{ x: new Date(1994, 0), y: 3386000 },
+				{ x: new Date(1995, 0), y: 6944000 },
+				{ x: new Date(1996, 0), y: 6026000 },
+				{ x: new Date(1997, 0), y: 2394000 },
+				{ x: new Date(1998, 0), y: 1872000 },
+				{ x: new Date(1999, 0), y: 2140000 },
+				{ x: new Date(2000, 0), y: 7289000 },
+				{ x: new Date(2001, 0), y: 4830000 },
+				{ x: new Date(2002, 0), y: 2009000 },
+				{ x: new Date(2003, 0), y: 2840000 },
+				{ x: new Date(2004, 0), y: 2396000 },
+				{ x: new Date(2005, 0), y: 1613000 },
+				{ x: new Date(2006, 0), y: 2821000 },
+				{ x: new Date(2007, 0), y: 2000000 },
+				{ x: new Date(2008, 0), y: 1397000 }
+			    ],*/
+
+			    //You can add dynamic data from the controller as shown below. Check the controller and uncomment the line which generates dataPoints.
+			    dataPoints: arr,
+			}
+            ]
+        });
+
+        chart.render();
+        });
+            </script>
+        }
+        else if (ViewBag.Types == "scatter" && ViewBag.Sflag == 1)
+        {
+            <script>
+           $( function s2() {
+
+                var chart = new CanvasJS.Chart("chartContainer", {
+	animationEnabled: true,
+	title: {
+		text: "Scatter Plot"
+	},
+	axisX: {
+		title: "@ViewBag.xa"
+	},
+	axisY: {
+		title: "@ViewBag.ya",
+		suffix: ""
+	},
+	legend: {
+		cursor: "pointer",
+		itemclick: toggleDataSeries
+	},
+	data: [{
+		type: "scatter",
+		name: "Server 1",
+		markerType: "cross",
+		showInLegend: true,
+		toolTipContent: "<span style=\"color:#4F81BC \">{name}</span><br>@ViewBag.xa: {x}<br>@ViewBag.ya: {y}",
+		dataPoints: @Html.Raw(ViewBag.DataPoints1)
+	},
+	{
+		type: "scatter",
+		name: "Server 2",
+		showInLegend: true,
+		markerType: "square",
+		toolTipContent: "<span style=\"color:#C0504E \">{name}</span><br>@ViewBag.xa: {x}<br>@ViewBag.ya: {y}%",
+		dataPoints: @Html.Raw(ViewBag.DataPoints5)
+	}]
+});
+chart.render();
+
+function toggleDataSeries(e) {
+	if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	} else {
+		e.dataSeries.visible = true;
+	}
+	e.chart.render();
+}
+        });
+            </script>
+        }
+        else if (ViewBag.Types == "boxAndWhisker")
+        {
+            <script>
+           $( function s2() {
+
+                var chart = new CanvasJS.Chart("chartContainer", {
+	animationEnabled: true,
+	title:{
+		text: "Box Plot"
+	},
+	axisX: {
+		valueFormatString: "DDD"
+	},
+	axisY: {
+		title: "@ViewBag.ya"
+	},
+	data: [{
+		type: "boxAndWhisker",
+		xValueFormatString: "DDDD",
+		yValueFormatString: "#0.0 Hours",
+		/*dataPoints: [
+			{ x: new Date(2017, 6, 3),  y: [4, 6, 8, 9, 7] },
+			{ x: new Date(2017, 6, 4),  y: [5, 6, 7, 8, 6.5] },
+			{ x: new Date(2017, 6, 5),  y: [4, 5, 7, 8, 6.5] },
+			{ x: new Date(2017, 6, 6),  y: [3, 5, 6, 9, 5.5] },
+			{ x: new Date(2017, 6, 7),  y: [6, 8, 10, 11, 8.5] },
+			{ x: new Date(2017, 6, 8),  y: [5, 7, 9, 12, 7.5] },
+			{ x: new Date(2017, 6, 9),  y: [4, 6, 8, 9, 7] }
+		]*/
+        dataPoints : @Html.Raw(ViewBag.DataPoints1)
+	}]
+});
+chart.render();
+
+        });
+            </script>
+        }
+        else if (ViewBag.Types == "histogram")
+        {
+            <script>
+                var x = [];
+            </script>
+            for (int i = 0; i < ViewBag.DataPoints1.Count; i++)
+            {
+                <script>
+
+        x.push(@ViewBag.DataPoints1[i]);
+
+                </script>
+            }
+            <script>
+                var trace = {
+                    x: x,
+                    type: 'histogram',
+                };
+                var data = [trace];
+                Plotly.newPlot('chartContainer', data, {}, { showSendToCloud: true });
+            </script>
+        }
+    }
+    if (ViewBag.DataPoints2 != null)
+    {
+        //now just plot the graph
+        if (ViewBag.Types == "scatter" && ViewBag.Sflag == 0)
+        {
+            <script>
+            $(function s1() {
+
+                var chart = new CanvasJS.Chart("chartContainer1", {
+                    animationEnabled: true,
+                    theme: "light2",
+                    zoomEnabled: true,
+                    title: {
+                        text: "Scatter Plot",
+                        fontSize: 20
+                    },
+                    subtitles: [{
+                        text: "Hover on the points to see the coordinates.",
+                        fontSize: 13
+                    }],
+                    axisX: {
+                        title: "@ViewBag.xa",
+                        titleFontSize: 13
+                    },
+                    axisY: {
+                        title: "@ViewBag.ya",
+                        titleFontSize: 13
+                    },
+                    data: [{
+                        type: "@ViewBag.Types",
+                        toolTipContent: "<b>@ViewBag.xa: </b>{x} <br/><b>@ViewBag.ya: </b> {y}",
+                        dataPoints: @Html.Raw(ViewBag.DataPoints2)
+                    }]
+                });
+                chart.render();
+
+            });
+            </script>
+        }
+        else if (ViewBag.Types == "column")
+        {
+            <script>
+           $( function s1() {
+
+                var chart = new CanvasJS.Chart("chartContainer1", {
+                    theme: "light2",
+                    animationEnabled: true,
+                    title: {
+                        text: "Column Chart"
+                    },
+                    data: [
+                        {
+                            type: "@ViewBag.Types",
+                            /*dataPoints: [
+                                { y: 6, label: "Apple" },
+                                { y: 4, label: "Mango" },
+                                { y: 5, label: "Orange" },
+                                { y: 7, label: "Banana" },
+                                { y: 4, label: "Pineapple" },
+                                { y: 6, label: "Pears" },
+                                { y: 7, label: "Grapes" },
+                                { y: 5, label: "Lychee" },
+                                { y: 4, label: "Jackfruit" }
+                            ],*/
+
+                            //You can add dynamic data from the controller as shown below. Check the controller and uncomment the line which generates dataPoints.
+                            dataPoints: @Html.Raw(ViewBag.DataPoints2),
+                        }
+                    ]
+                });
+                chart.render();
+            });
+            </script>
+        }
+        else if (ViewBag.Types == "pie")
+        {
+            <script>
+           $( function s1() {
+
+                var chart = new CanvasJS.Chart("chartContainer1", {
+            title: {
+                text: "Pie Chart"
+            },
+            animationEnabled: true,
+            legend: {
+                verticalAlign: "center",
+                horizontalAlign: "left",
+                fontSize: 20,
+                fontFamily: "Helvetica"
+            },
+            theme: "light2",
+            data: [
+            {
+                type: "@ViewBag.Types",
+                indexLabelFontFamily: "Garamond",
+                indexLabelFontSize: 20,
+                indexLabel: "{label} {y}%",
+                startAngle: -20,
+                showInLegend: true,
+                toolTipContent: "{legendText} {y}%",
+                /*dataPoints: [
+                    { y: 72.48, legendText: "Google", label: "Google" },
+                    { y: 10.39, legendText: "Bing", label: "Bing" },
+                    { y: 7.78, legendText: "Yahoo!", label: "Yahoo!" },
+                    { y: 7.14, legendText: "Baidu", label: "Baidu" },
+                    { y: 0.22, legendText: "Ask", label: "Ask" },
+                    { y: 0.15, legendText: "AOL", label: "AOL" },
+                    { y: 1.84, legendText: "Others", label: "Others" }
+                ],*/
+
+                //You can add dynamic data from the controller as shown below. Check the controller and uncomment the line which generates dataPoints.
+                dataPoints: @Html.Raw(ViewBag.DataPoints2),
+            }]
+        });
+        chart.render();
+        });
+            </script>
+        }
+        else if (ViewBag.Types == "splineArea")
+        {
+            <script>
+           $( function s2() {
+                
+                var a = "@ViewBag.DataPoints2";
+                var arr = JSON.parse(a.replace(/&quot;/g, '"'));
+                function SortByX(X, Y) {
+                    return X.x - Y.x;
+                }
+                arr.sort(SortByX);
+                var chart = new CanvasJS.Chart("chartContainer1", {
+            title: {
+                text: "Spline Area Chart"
+            },
+            animationEnabled: true,
+            axisY: {
+                title: "@ViewBag.ya",
+                valueFormatString: "#0,,.",
+                suffix: ""
+            },
+            data: [
+			{
+			    toolTipContent: "{y} @ViewBag.ya",
+			    type: "splineArea",
+			    markerSize: 5,
+			    color: "rgba(54,158,173,.7)",
+			    /*dataPoints: [
+				{ x: new Date(1992, 0), y: 2506000 },
+				{ x: new Date(1993, 0), y: 2798000 },
+				{ x: new Date(1994, 0), y: 3386000 },
+				{ x: new Date(1995, 0), y: 6944000 },
+				{ x: new Date(1996, 0), y: 6026000 },
+				{ x: new Date(1997, 0), y: 2394000 },
+				{ x: new Date(1998, 0), y: 1872000 },
+				{ x: new Date(1999, 0), y: 2140000 },
+				{ x: new Date(2000, 0), y: 7289000 },
+				{ x: new Date(2001, 0), y: 4830000 },
+				{ x: new Date(2002, 0), y: 2009000 },
+				{ x: new Date(2003, 0), y: 2840000 },
+				{ x: new Date(2004, 0), y: 2396000 },
+				{ x: new Date(2005, 0), y: 1613000 },
+				{ x: new Date(2006, 0), y: 2821000 },
+				{ x: new Date(2007, 0), y: 2000000 },
+				{ x: new Date(2008, 0), y: 1397000 }
+			    ],*/
+
+			    //You can add dynamic data from the controller as shown below. Check the controller and uncomment the line which generates dataPoints.
+			    dataPoints: arr,
+			}
+            ]
+        });
+
+        chart.render();
+        });
+            </script>
+        }
+        else if (ViewBag.Types == "scatter" && ViewBag.Sflag == 1)
+        {
+            <script>
+           $( function s1() {
+
+                var chart = new CanvasJS.Chart("chartContainer1", {
+	animationEnabled: true,
+	title: {
+		text: "Scatter Plot"
+	},
+	axisX: {
+		title: "@ViewBag.xa"
+	},
+	axisY: {
+		title: "@ViewBag.ya",
+		suffix: ""
+	},
+	legend: {
+		cursor: "pointer",
+		itemclick: toggleDataSeries
+	},
+	data: [{
+		type: "scatter",
+		name: "Server 1",
+		markerType: "cross",
+		showInLegend: true,
+		toolTipContent: "<span style=\"color:#4F81BC \">{name}</span><br>@ViewBag.xa: {x}<br>@ViewBag.ya: {y}",
+		dataPoints: @Html.Raw(ViewBag.DataPoints2)
+	},
+	{
+		type: "scatter",
+		name: "Server 2",
+		showInLegend: true,
+		markerType: "square",
+		toolTipContent: "<span style=\"color:#C0504E \">{name}</span><br>@ViewBag.xa: {x}<br>@ViewBag.ya: {y}",
+		dataPoints: @Html.Raw(ViewBag.DataPoints3)
+	}]
+});
+chart.render();
+
+function toggleDataSeries(e) {
+	if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	} else {
+		e.dataSeries.visible = true;
+	}
+	e.chart.render();
+}
+        });
+            </script>
+        }
+    }
+    if (ViewBag.DataPoints4 != null)
+    {
+        if (ViewBag.Types == "boxAndWhisker")
+        {
+            <script>
+           $(function s1() {
+
+                    var chart = new CanvasJS.Chart("chartContainer1", {
+                    animationEnabled: true,
+	                title:
+                    {
+                    text: "Box Plot"
+                    },
+	                axisX:
+                    {
+                    valueFormatString: "DDD"
+                    },
+	                axisY:
+                    {
+                    title: "@ViewBag.ya"
+                    },
+	                data: [{
+                        type: "boxAndWhisker",
+		                xValueFormatString: "DDDD",
+		                yValueFormatString: "#0.0 Hours",
+
+        dataPoints: @Html.Raw(ViewBag.DataPoints4)
+
+    }]
+});
+                chart.render();
+
+            });
+            </script>
+        }
+    }
+    if (ViewBag.DataPoints6 != null)
+    {
+        if (ViewBag.Types == "histogram")
+        {
+            <script>
+                var x = [];
+            </script>
+            for (int i = 0; i < ViewBag.DataPoints6.Count; i++)
+            {
+                <script>
+
+        x.push(@ViewBag.DataPoints6[i]);
+
+                </script>
+            }
+            <script>
+                var trace = {
+                    x: x,
+                    type: 'histogram',
+                };
+                var data = [trace];
+                Plotly.newPlot('chartContainer1', data, {}, { showSendToCloud: true });
+            </script>
+        }
+    }
+}
+
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
