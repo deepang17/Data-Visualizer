@@ -1,0 +1,40 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<style>
+    body, html {
+        height: 100%;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .bg123 {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        z-index: -1;
+        /* The image used */
+        background-image: url("../../Content/error.jpeg");
+        background-color: aqua;
+        /* Full height */
+        height: 100%;
+        /* Center and scale the image nicely */
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+</style>
+
+<div class="bg123" style="width:100vw;height:100vh;"></div>
+<div id="error_display">
+    <h1 style="color:tomato;position:fixed;top:18vh;left:70vw;"><b>Are Deva..!!</b></h1>
+    @if (TempData["errormessage"] != null)
+    {
+        <h2 style="color:darkviolet;position:fixed;top:24vh;left:70vw;"><b><i>@TempData["errormessage"].ToString()</i></b></h2>
+        <h4 style="color:darkviolet;position:fixed;top:37vh;left:70vw;">
+            <b>Head back to <a href="/HomePage/Index"><u style="color:aquamarine">Home</u></a><br />
+            Go TO <a href="#" onclick="location.href = document.referrer; return false;"> <u style="color:aquamarine">Previous</u> </a>Page
+        </b></h4>
+    }
+</div>

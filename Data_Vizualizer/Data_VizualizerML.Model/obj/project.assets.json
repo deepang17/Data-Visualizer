@@ -3566,11 +3566,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Deepang\\OneDrive\\Desktop\\Projects\\checker\\Data_Vizualizer1\\Data_Vizualizer\\Data_VizualizerML.Model\\Data_VizualizerML.Model.csproj",
+      "projectUniqueName": "C:\\Users\\Deepang\\OneDrive\\Desktop\\Data-Visualizer\\Data_Vizualizer\\Data_VizualizerML.Model\\Data_VizualizerML.Model.csproj",
       "projectName": "Data_VizualizerML.Model",
-      "projectPath": "C:\\Users\\Deepang\\OneDrive\\Desktop\\Projects\\checker\\Data_Vizualizer1\\Data_Vizualizer\\Data_VizualizerML.Model\\Data_VizualizerML.Model.csproj",
+      "projectPath": "C:\\Users\\Deepang\\OneDrive\\Desktop\\Data-Visualizer\\Data_Vizualizer\\Data_VizualizerML.Model\\Data_VizualizerML.Model.csproj",
       "packagesPath": "C:\\Users\\Deepang\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Deepang\\OneDrive\\Desktop\\Projects\\checker\\Data_Vizualizer1\\Data_Vizualizer\\Data_VizualizerML.Model\\obj\\",
+      "outputPath": "C:\\Users\\Deepang\\OneDrive\\Desktop\\Data-Visualizer\\Data_Vizualizer\\Data_VizualizerML.Model\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

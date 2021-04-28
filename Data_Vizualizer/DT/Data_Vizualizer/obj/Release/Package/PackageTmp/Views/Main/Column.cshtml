@@ -1,0 +1,157 @@
+﻿
+@{
+    ViewBag.Title = "Column";
+}
+
+<form action="/Main/Column" method="post">
+    <div class="column_section">
+        <div class="input-group mb-3 scatter_section">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="xaxis">X-axis</label>
+            </div>
+
+            <select name="xaxis_select" class="custom-select" id="xaxis">
+                <!--ONLY  the numbers, so integer or double only-->
+                @{
+                    for (int i = 0; i < ViewBag.Labels.Count; i++)
+                    {
+                        if (ViewBag.datatype[i] == "String")
+                        {
+                            <option value="@ViewBag.Labels[i]">@ViewBag.Labels[i]</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="input-group mb-3 scatter_section">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="yaxis">Y-axis</label>
+            </div>
+            <select class="custom-select" name="yaxis_select" id="yaxis">
+                <!--ONLY  the numbers, so integer or double only-->
+
+                @{
+                    for (int i = 0; i < ViewBag.Labels.Count; i++)
+                    {
+                        if (ViewBag.datatype[i] == "Integer" || ViewBag.datatype[i] == "Double")
+                        {
+                            <option value="@ViewBag.Labels[i]">@ViewBag.Labels[i]</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div>
+            <label>
+                Enter Range:
+            </label>
+        </div>
+        <div class="input-group mb-3 scatter_section">
+            <input type="text" class="form-control" id="strange" name="strange" value="1" />
+            <input type="text" class="form-control" id="endrange" name="endrange" value="@ViewBag.datalen" />
+
+        </div>
+    </div>
+    <button style="margin-top:20px;width:100%;" type="submit" class="btn btn-primary" id="subButton">Submit</button>
+</form>
+<button style="margin-top:20px;width:100%" onclick="window.location.href = '/Main/Plot'" class="btn btn-primary" id="sub7Button">Back</button>
+<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+@{
+    if (ViewBag.splotflag1 != null && ViewBag.splotflag1 == true)
+    {
+        //now just plot the graph
+        <script type="text/javascript">
+
+            window.onload = function () {
+                var chart = new CanvasJS.Chart("chartContainer", {
+                    theme: "light2",
+                    exportFileName: "Column Chart",
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    title: {
+                        text: "Column Chart"
+                    },
+                    data: [
+                        {
+                            type: "column",
+                            /*dataPoints: [
+                                { y: 6, label: "Apple" },
+                                { y: 4, label: "Mango" },
+                                { y: 5, label: "Orange" },
+                                { y: 7, label: "Banana" },
+                                { y: 4, label: "Pineapple" },
+                                { y: 6, label: "Pears" },
+                                { y: 7, label: "Grapes" },
+                                { y: 5, label: "Lychee" },
+                                { y: 4, label: "Jackfruit" }
+                            ],*/
+
+                            //You can add dynamic data from the controller as shown below. Check the controller and uncomment the line which generates dataPoints.
+                            dataPoints: @Html.Raw(ViewBag.DataPoints),
+                        }
+                    ]
+                });
+                chart.render();
+            };
+        </script>
+    }
+} 
+@if (ViewBag.splotflag1 == true)
+{
+    if (Request.IsAuthenticated)
+    {      <div class="row" style="margin:5px;">
+    <div class="col-lg-3">
+        <input type="text" id="title" placeholder="Title" />
+    </div>
+    <div class="col-lg-3">
+<textarea id="desc" placeholder="Description" rows="1"></textarea>
+    </div>
+    <div class="col-lg-2">
+        <input type="button" id="btnSave" class="btn btn-primary" value="save" />
+    </div>
+</div>
+    }
+           <div class="row" style="margin:0px;">
+               <form action="/Main/Normalize" method="get" style="margin-right:10px;">
+                   <input type="text" value="Column" name="p1" hidden>
+                   <input type="text" value="column" name="type" hidden>
+                   <input type="text" value=@ViewBag.xa name="xaxis" hidden>
+                   <input type="text" value=@ViewBag.ya name="yaxis" hidden>
+                   <button type="submit" class="btn btn-primary">Normalize</button>
+               </form>
+               <form action="/Main/Transform" method="get">
+                   <input type="text" value="Column" name="pt1" hidden>
+                   <input type="text" value="column" name="typet" hidden>
+                   <input type="text" value=@ViewBag.xa name="xaxist" hidden>
+                   <input type="text" value=@ViewBag.ya name="yaxist" hidden>
+                   <button type="submit" class="btn btn-primary" id="b4">Transform</button>
+               </form>
+           </div>
+}
+<script type="text/javascript">
+
+    // Send the canvas image to the server.
+
+    $(function () {
+        $("#btnSave").click(function () {
+            var image = document.getElementsByClassName("canvasjs-chart-canvas")[0].toDataURL("image/png");
+            var intext = document.getElementById("title").value;
+            var descrip = document.getElementById("desc").value;
+            var gtype = "Column";
+            image = image.replace('data:image/png;base64,', '');
+            $.ajax({
+                type: 'POST',
+                url: '/Main/SaveGraph',
+                data: '{ "imageData" : "' + image + '" , "inText":"' + intext + '","gtype":"' + gtype + '","desc":"' + descrip + '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (msg) {
+                    alert('Image saved successfully !');
+                }
+            });
+            alert("Image saved successfully");
+        });
+    });
+</script>
+
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>

@@ -3938,11 +3938,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Deepang\\OneDrive\\Desktop\\Projects\\checker\\Data_Vizualizer1\\Data_Vizualizer\\Data_VizualizerML.ConsoleApp\\Data_VizualizerML.ConsoleApp.csproj",
+      "projectUniqueName": "C:\\Users\\Deepang\\OneDrive\\Desktop\\Data-Visualizer\\Data_Vizualizer\\Data_VizualizerML.ConsoleApp\\Data_VizualizerML.ConsoleApp.csproj",
       "projectName": "Data_VizualizerML.ConsoleApp",
-      "projectPath": "C:\\Users\\Deepang\\OneDrive\\Desktop\\Projects\\checker\\Data_Vizualizer1\\Data_Vizualizer\\Data_VizualizerML.ConsoleApp\\Data_VizualizerML.ConsoleApp.csproj",
+      "projectPath": "C:\\Users\\Deepang\\OneDrive\\Desktop\\Data-Visualizer\\Data_Vizualizer\\Data_VizualizerML.ConsoleApp\\Data_VizualizerML.ConsoleApp.csproj",
       "packagesPath": "C:\\Users\\Deepang\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Deepang\\OneDrive\\Desktop\\Projects\\checker\\Data_Vizualizer1\\Data_Vizualizer\\Data_VizualizerML.ConsoleApp\\obj\\",
+      "outputPath": "C:\\Users\\Deepang\\OneDrive\\Desktop\\Data-Visualizer\\Data_Vizualizer\\Data_VizualizerML.ConsoleApp\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -3961,8 +3961,8 @@
       "frameworks": {
         "netcoreapp2.1": {
           "projectReferences": {
-            "C:\\Users\\Deepang\\OneDrive\\Desktop\\Projects\\checker\\Data_Vizualizer1\\Data_Vizualizer\\Data_VizualizerML.Model\\Data_VizualizerML.Model.csproj": {
-              "projectPath": "C:\\Users\\Deepang\\OneDrive\\Desktop\\Projects\\checker\\Data_Vizualizer1\\Data_Vizualizer\\Data_VizualizerML.Model\\Data_VizualizerML.Model.csproj"
+            "C:\\Users\\Deepang\\OneDrive\\Desktop\\Data-Visualizer\\Data_Vizualizer\\Data_VizualizerML.Model\\Data_VizualizerML.Model.csproj": {
+              "projectPath": "C:\\Users\\Deepang\\OneDrive\\Desktop\\Data-Visualizer\\Data_Vizualizer\\Data_VizualizerML.Model\\Data_VizualizerML.Model.csproj"
             }
           }
         }

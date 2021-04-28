@@ -1,0 +1,217 @@
+﻿
+@{
+    ViewBag.Title = "DSP";
+}
+
+<form action="/Main/DSP" method="post">
+    <div class="scatter_section">
+        <div class="input-group mb-3 scatter_section">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="xaxis">X-axis</label>
+            </div>
+
+            <select name="xaxis_select1" class="custom-select" id="xaxis">
+                <!--ONLY  the numbers, so integer or double only-->
+                @{
+                    for (int i = 0; i < ViewBag.Labels.Count; i++)
+                    {
+                        if (ViewBag.datatype[i] == "Integer" || ViewBag.datatype[i] == "Double")
+                        {
+                            <option value="@ViewBag.Labels[i]">@ViewBag.Labels[i]</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="input-group mb-3 scatter_section">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="yaxis">Y-axis</label>
+            </div>
+            <select class="custom-select" name="yaxis_select1" id="yaxis">
+                <!--ONLY  the numbers, so integer or double only-->
+
+                @{
+                    for (int i = 0; i < ViewBag.Labels.Count; i++)
+                    {
+                        if (ViewBag.datatype[i] == "Integer" || ViewBag.datatype[i] == "Double")
+                        {
+                            <option value="@ViewBag.Labels[i]">@ViewBag.Labels[i]</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="input-group mb-3 scatter_section">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="xaxis">X-axis</label>
+            </div>
+
+            <select name="xaxis_select2" class="custom-select" id="xaxis">
+                <!--ONLY  the numbers, so integer or double only-->
+                @{
+                    for (int i = 0; i < ViewBag.Labels.Count; i++)
+                    {
+                        if (ViewBag.datatype[i] == "Integer" || ViewBag.datatype[i] == "Double")
+                        {
+                            <option value="@ViewBag.Labels[i]">@ViewBag.Labels[i]</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="input-group mb-3 scatter_section">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="yaxis">Y-axis</label>
+            </div>
+            <select class="custom-select" name="yaxis_select2" id="yaxis">
+                <!--ONLY  the numbers, so integer or double only-->
+
+                @{
+                    for (int i = 0; i < ViewBag.Labels.Count; i++)
+                    {
+                        if (ViewBag.datatype[i] == "Integer" || ViewBag.datatype[i] == "Double")
+                        {
+                            <option value="@ViewBag.Labels[i]">@ViewBag.Labels[i]</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div>
+            <label>
+                Enter Range:
+            </label>
+        </div>
+        <div class="input-group mb-3 scatter_section">
+            <input type="text" class="form-control" id="strange" name="strange" value="1" />
+            <input type="text" class="form-control" id="endrange" name="endrange" value="@ViewBag.datalen" />
+
+        </div>
+    </div>
+    <button style="margin-top:20px;width:100%;" type="submit" class="btn btn-primary" id="subButton">Submit</button>
+</form>
+<button style="margin-top:20px;width:100%" onclick="window.location.href = '/Main/Plot'" class="btn btn-primary" id="sub7Button">Back</button>
+<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+
+@{
+    if (ViewBag.splotflag4 != null && ViewBag.splotflag4 == true)
+    {
+        //now just plot the graph
+        <script>
+            window.onload = function () {
+                var chart = new CanvasJS.Chart("chartContainer", {
+                    exportFileName: "Double Scatter Plot",
+                    exportEnabled: true,
+	animationEnabled: true,
+	title: {
+		text: "Double Scatter Plot"
+	},
+	axisX: {
+		title: "@ViewBag.xa"
+	},
+	axisY: {
+		title: "@ViewBag.ya",
+		//suffix: "%"
+	},
+	legend: {
+		cursor: "pointer",
+		itemclick: toggleDataSeries
+	},
+	data: [{
+		type: "scatter",
+		name: "Server 1",
+		markerType: "cross",
+		showInLegend: true,
+		toolTipContent: "<span style=\"color:#4F81BC \">{name}</span><br>@ViewBag.xa: {x}<br>@ViewBag.ya: {y}",
+		dataPoints: @Html.Raw(ViewBag.DataPoints1)
+	},
+	{
+		type: "scatter",
+		name: "Server 2",
+		showInLegend: true,
+		markerType: "square",
+		toolTipContent: "<span style=\"color:#C0504E \">{name}</span><br>@ViewBag.xa1: {x}<br>@ViewBag.ya1: {y}",
+		dataPoints: @Html.Raw(ViewBag.DataPoints2)
+	}]
+});
+chart.render();
+
+function toggleDataSeries(e) {
+	if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	} else {
+		e.dataSeries.visible = true;
+	}
+	e.chart.render();
+}
+
+}
+        </script>
+    }
+}
+@if (ViewBag.splotflag4 == true)
+{
+    if (Request.IsAuthenticated)
+    {
+        <div class="row" style="margin:5px;">
+            <div class="col-lg-3">
+                <input type="text" id="title" placeholder="Title" />
+            </div>
+            <div class="col-lg-3">
+<textarea id="desc" placeholder="Description" rows="1"></textarea>
+            </div>
+            <div class="col-lg-2">
+                <input type="button" id="btnSave" class="btn btn-primary" value="save" />
+            </div>
+        </div>
+    }
+<div class="row">
+    <form action="/Main/Normalize" method="get">
+        <input type="text" value="DSP" name="p1" hidden>
+        <input type="text" value="scatter" name="type" hidden>
+        <input type="text" value=@ViewBag.xa name="xaxis" hidden>
+        <input type="text" value=@ViewBag.ya name="yaxis" hidden>
+        <input type="text" value=@ViewBag.xa1 name="xaxis1" hidden>
+        <input type="text" value=@ViewBag.ya1 name="yaxis1" hidden>
+        <button type="submit" class="btn btn-primary">Normalize</button>
+    </form>
+    <form action="/Main/Transform" method="get" style="margin-left:10px;">
+        <input type="text" value="DSP" name="pt1" hidden>
+        <input type="text" value="scatter" name="typet" hidden>
+        <input type="text" value=@ViewBag.xa name="xaxist" hidden>
+        <input type="text" value=@ViewBag.ya name="yaxist" hidden>
+        <input type="text" value=@ViewBag.xa1 name="xaxist1" hidden>
+        <input type="text" value=@ViewBag.ya1 name="yaxist1" hidden>
+        <button type="submit" class="btn btn-primary" id="b4">Transform</button>
+    </form>
+</div>
+}
+<script type="text/javascript">
+
+    // Send the canvas image to the server.
+
+    $(function () {
+        $("#btnSave").click(function () {
+            var image = document.getElementsByClassName("canvasjs-chart-canvas")[0].toDataURL("image/png");
+            var intext = document.getElementById("title").value;
+            var descrip = document.getElementById("desc").value;
+            var gtype = "DSP";
+            image = image.replace('data:image/png;base64,', '');
+            $.ajax({
+                type: 'POST',
+                url: '/Main/SaveGraph',
+                data: '{ "imageData" : "' + image + '" , "inText":"' + intext + '","gtype":"' + gtype + '","desc":"' + descrip + '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (msg) {
+                    alert('Image saved successfully !');
+                }
+            });
+            alert("Image saved successfully");
+        });
+    });
+</script>
+
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+

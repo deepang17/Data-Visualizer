@@ -1,0 +1,231 @@
+﻿@using System.Data;
+@{
+    ViewBag.Title = "Description";
+}
+
+<h2>Description</h2>
+
+<style type="text/css">
+    /* Generic Styling, for Desktops/Laptops */
+    body {
+        background-color: white;
+    }
+
+    form button:hover {
+        background: #149174;
+        color: #0C5645;
+    }
+
+    form button:active {
+        border: 0;
+    }
+
+    button {
+        margin: 0;
+        color: #fff;
+        background: #16a085;
+        border: none;
+        width: 300px;
+        height: 35px;
+        margin-top: 10px;
+        
+        border-radius: 4px;
+        border-bottom: 4px solid #117A60;
+        transition: all .2s ease;
+        outline: none;
+    }
+
+    #b2 {
+        margin-top: 290px;
+    }
+
+    #t2 {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 150px;
+    }
+    /* Zebra striping */
+    tr:nth-of-type(odd) {
+        background: #eee;
+    }
+
+    th {
+        background: #333;
+        color: white;
+        font-weight: bold;
+    }
+
+    td, th {
+        padding: 6px;
+        border: 1px solid #ccc;
+        text-align: left;
+    }
+    /*
+    Max width before this PARTICULAR table gets nasty
+    This query will take effect for any screen smaller than 760px
+    and also iPads specifically.
+    */
+    @@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+        /* Force table to not be like tables anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+            /* Hide table headers (but not display: none;, for accessibility) */
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+        tr {
+            border: 1px solid #ccc;
+        }
+
+        td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%;
+        }
+
+            td:before {
+                /* Now like a table header */
+                position: absolute;
+                /* Top/left values mimic padding */
+                top: 6px;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+            }
+            /*
+     Label the data
+     */
+            td:before {
+                content: attr(data-title);
+            }
+    }
+</style>
+<form action="/Main/Description" method="post">
+    <div>Select The Field you want to get information about:</div>
+    <div class="input-group mb-3 scatter_section">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="xaxis">Field</label>
+        </div>
+
+        <select name="xaxis_select" class="custom-select" id="xaxis">
+            <!--ONLY  the numbers, so integer or double only-->
+            @{
+                for (int i = 0; i < ViewBag.Labels.Count; i++)
+                {
+                    if (ViewBag.datatype[i] == "Integer" || ViewBag.datatype[i] == "Double")
+                    {
+                        <option value="@ViewBag.Labels[i]">@ViewBag.Labels[i]</option>
+                    }
+                }
+            }
+        </select>
+    </div>
+    <button style="margin-top:20px;width:100%" type="submit" class="btn btn-primary" id="subButton">Select</button>
+</form>
+<button style="margin-top:20px;width:100%" onclick="window.location.href = '/Main/Plot'" class="btn btn-primary" id="sub7Button">Back</button>
+<div>
+    <table>
+
+        @if (ViewBag.Desc != null)
+        {
+            <thead>
+
+                @foreach (DataColumn column in (ViewBag.Desc as System.Data.DataTable).Columns)
+                {
+                <th>@column.ColumnName.ToUpper()</th>
+
+
+            }
+                </thead>
+                if ((ViewBag.Desc as System.Data.DataTable).Rows.Count > 0)
+                {
+                    foreach (DataRow dr in (ViewBag.Desc as System.Data.DataTable).Rows)
+                    {
+
+                        <tr>
+
+                            @foreach (DataColumn column in (ViewBag.Desc as System.Data.DataTable).Columns)
+                            {
+                                <td data-title='@column.ColumnName'>
+
+                                    @dr[column].ToString()&nbsp;
+                                </td>
+                            }
+
+
+
+
+                        </tr>
+
+                    }
+
+                }
+                else
+                {
+                    int count = (ViewBag.Desc as System.Data.DataTable).Columns.Count;
+                    <tr>
+
+                        <td colspan='@count' style="color:red;">
+
+                            No Data Found.
+                        </td>
+
+
+
+                    </tr>
+
+                }
+
+            }
+            else
+            {
+                if (ViewBag.Error != null)
+                {
+                    <tr>
+                        <td style="color:red;">
+
+                            @(ViewBag.Error != null ? ViewBag.Error.ToString() : "")
+                        </td>
+                    </tr>
+                }
+            }
+    </table>
+    <table id="t2">
+        @if (@ViewBag.cerr != null && @ViewBag.cerr)
+        {
+            <tr>
+                <th>@ViewBag.cerrMessage</th>
+                @foreach (var item in ViewBag.celist)
+                {
+                    <td style="color:red;">@item</td>
+                }
+            </tr>
+        }
+
+        @if (@ViewBag.dterr != null && @ViewBag.dterr)
+        {
+            <tr>
+                <th>@ViewBag.dterrMessage</th>
+                @foreach (var item in ViewBag.dtelist)
+                {
+                    <td style="color:red;">@(item[0] + 1) @(item[1] + 1)</td>
+                }
+            </tr>
+        }
+
+    </table>
+</div>
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+

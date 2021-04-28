@@ -1,0 +1,155 @@
+﻿
+@{
+    ViewBag.Title = "Histogram";
+}
+
+<head>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <form action="/Main/Histogram" method="post">
+        <div class="scatter_section">
+            <div class="input-group mb-3 scatter_section">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="xaxis">X-axis</label>
+                </div>
+
+                <select name="xaxis_select" class="custom-select" id="xaxis">
+                    <!--ONLY  the numbers, so integer or double only-->
+                    @{
+                        for (int i = 0; i < ViewBag.Labels.Count; i++)
+                        {
+                            if (ViewBag.datatype[i] == "Integer" || ViewBag.datatype[i] == "Double")
+                            {
+                                <option value="@ViewBag.Labels[i]">@ViewBag.Labels[i]</option>
+                            }
+                        }
+                    }
+                </select>
+            </div>
+            <div>
+                <label>
+                    Enter Range:
+                </label>
+            </div>
+            <div class="input-group mb-3 scatter_section">
+                <input type="text" class="form-control" id="strange" name="strange" value="1" />
+                <input type="text" class="form-control" id="endrange" name="endrange" value="@ViewBag.datalen" />
+
+            </div>
+        </div>
+        <button style="margin-top:20px;width:100%;" type="submit" class="btn btn-primary" id="subButton">Submit</button>
+    </form>
+    <button style="margin-top:20px;width:100%" onclick="window.location.href = '/Main/Plot'" class="btn btn-primary" id="sub7Button">Back</button>
+    <!-- Plotly chart will be drawn inside this DIV -->
+    <div id="chartContainer"></div>
+    @if (ViewBag.splotflag == true)
+    {
+        if (Request.IsAuthenticated)
+        {
+            <input type="text" id="inText" />
+            <textarea id="desc"></textarea>
+            <button id="svgbtn" onclick="abc()">svg</button>
+            <canvas id="canvas" height="500px" width="1200px" style="width:1000px;height:500px;display:none;"></canvas>
+
+        }
+        <div class="row">
+            <form action="/Main/Normalize" method="get" style="margin-right:10px;">
+                <input type="text" value="Histogram" name="p1" hidden>
+                <input type="text" value="histogram" name="type" hidden>
+                <input type="text" value=@ViewBag.xa name="xaxis" hidden>
+                <input type="text" value=@ViewBag.ya name="yaxis" hidden>
+                <button type="submit" class="btn btn-primary" id="b1">Normalize</button>
+            </form>
+            <form action="/Main/Transform" method="get">
+                <input type="text" value="Histogram" name="pt1" hidden>
+                <input type="text" value="histogram" name="typet" hidden>
+                <input type="text" value=@ViewBag.xa name="xaxist" hidden>
+                <input type="text" value=@ViewBag.ya name="yaxist" hidden>
+                <button type="submit" class="btn btn-primary" id="b4">Transform</button>
+            </form>
+        </div>
+    }
+    <script>
+
+        var btn = document.getElementById("svgbtn");
+
+        function triggerDownload(imgURI) {
+            var evt = new MouseEvent('click', {
+                view: window,
+                bubbles: false,
+                cancelable: true
+            });
+
+            var a = document.createElement('a');
+            a.setAttribute('download', 'MY_COOL_IMAGE.png');
+            a.setAttribute('href', imgURI);
+            a.setAttribute('target', '_blank');
+
+            a.dispatchEvent(evt);
+        }
+        function abc() {
+            var intext = document.getElementById("inText").value;
+            var desc = document.getElementById("desc").value;
+            var svg = document.getElementsByClassName("main-svg")[0];
+            var canvas = document.getElementById("canvas");
+            console.log("hello");
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+            var data = (new XMLSerializer()).serializeToString(svg);
+            var DOMURL = window.URL || window.webkitURL || window;
+
+            var img = new Image();
+            var svgBlob = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+            var url = DOMURL.createObjectURL(svgBlob);
+
+            img.onload = function () {
+                ctx.drawImage(img, 0, 0);
+                DOMURL.revokeObjectURL(url);
+
+                var imgURI = canvas
+                    .toDataURL('image/png')
+                    .replace('image/png', 'image/octet-stream');
+                var x1 = canvas
+                    .toDataURL('image/png');
+                $.ajax({
+                    type: 'POST',
+                    url: '/Main/SaveSvg',
+                    data: '{ "imageData" : "' + x1 + '" , "inText":"' + intext + '" , "gtype" : "' + "Histogram" + '", "desc" : "' + desc + '"}',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (msg) {
+                        alert('Image saved successfully !');
+                    }
+                });
+
+                //triggerDownload(imgURI);
+            };
+
+            img.src = url;
+        }
+    </script>
+    <script>
+        var x = [];
+    </script>
+    @if (ViewBag.DataPoints != null)
+    {
+        for (int i = 0; i < ViewBag.DataPoints.Count; i++)
+        {
+            <script>
+
+        x.push(@ViewBag.DataPoints[i]);
+
+            </script>
+        }
+        <script>
+            var trace = {
+                x: x,
+                type: 'histogram',
+            };
+            var data = [trace];
+            Plotly.newPlot('chartContainer', data, {}, { showSendToCloud: true });
+        </script>
+    }
+</body>

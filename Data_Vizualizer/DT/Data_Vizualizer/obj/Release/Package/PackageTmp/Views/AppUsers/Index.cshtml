@@ -1,0 +1,21 @@
+﻿@using Data_Vizualizer.Models;
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2><b>List Of Users</b></h2>
+<div>
+    <ol>
+        Count of users: @ViewBag.ls.Count
+    </ol>
+    <h2><b>Users:-</b></h2>
+    <ol>
+        @foreach (ApplicationUser item in ViewBag.ls)
+        {
+            <li>@item.UserName</li>
+        }
+    </ol>
+
+</div>
+
+

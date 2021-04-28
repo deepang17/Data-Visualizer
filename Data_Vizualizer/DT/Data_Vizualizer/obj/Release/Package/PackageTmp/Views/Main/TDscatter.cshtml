@@ -1,0 +1,185 @@
+﻿
+@{
+    ViewBag.Title = "TDscatter";
+}
+
+<h2>TDscatter</h2>
+
+<form action="/Main/TDscatter" method="post">
+    <div class="scatter_section">
+        <div class="input-group mb-3 scatter_section">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="xaxis">X-axis</label>
+            </div>
+
+            <select name="xaxis_select" class="custom-select" id="xaxis">
+                <!--ONLY  the numbers, so integer or double only-->
+                @{
+                    for (int i = 0; i < ViewBag.Labels.Count; i++)
+                    {
+                        if (ViewBag.datatype[i] == "Integer" || ViewBag.datatype[i] == "Double")
+                        {
+                            <option value="@ViewBag.Labels[i]">@ViewBag.Labels[i]</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="input-group mb-3 scatter_section">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="yaxis">Y-axis</label>
+            </div>
+            <select class="custom-select" name="yaxis_select" id="yaxis">
+                <!--ONLY  the numbers, so integer or double only-->
+
+                @{
+                    for (int i = 0; i < ViewBag.Labels.Count; i++)
+                    {
+                        if (ViewBag.datatype[i] == "Integer" || ViewBag.datatype[i] == "Double")
+                        {
+                            <option value="@ViewBag.Labels[i]">@ViewBag.Labels[i]</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="input-group mb-3 scatter_section">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="zaxis">Z-axis</label>
+            </div>
+            <select class="custom-select" name="zaxis_select" id="zaxis">
+                <!--ONLY  the numbers, so integer or double only-->
+
+                @{
+                    for (int i = 0; i < ViewBag.Labels.Count; i++)
+                    {
+                        if (ViewBag.datatype[i] == "Integer" || ViewBag.datatype[i] == "Double")
+                        {
+                            <option value="@ViewBag.Labels[i]">@ViewBag.Labels[i]</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="input-group mb-3 scatter_section">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="Label">Label</label>
+            </div>
+            <select class="custom-select" name="Label_select" id="Label">
+                <!--ONLY  the numbers, so integer or double only-->
+
+                @{
+                    for (int i = 0; i < ViewBag.Labels.Count; i++)
+                    {
+                        if (ViewBag.datatype[i] == "String")
+                        {
+                            <option value="@ViewBag.Labels[i]">@ViewBag.Labels[i]</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div>
+            <label>
+                Enter Range:
+            </label>
+        </div>
+        <div class="input-group mb-3 scatter_section">
+            <input type="text" class="form-control" id="strange" name="strange" value="1" />
+            <input type="text" class="form-control" id="endrange" name="endrange" value="@ViewBag.datalen" />
+
+        </div>
+    </div>
+    <button style="margin-top:20px;width:100%;" type="submit" class="btn btn-primary" id="subButton">Submit</button>
+</form>
+<button style="margin-top:20px;width:100%" onclick="window.location.href = '/Main/Plot'" class="btn btn-primary" id="sub7Button">Back</button>
+
+
+@{
+    if (ViewBag.flagdata != null && ViewBag.flagdata == true)
+    {
+        <div id="myDiv" style="width:100%;height:100%"></div>
+
+        <script>
+            var data=[];
+        </script>
+
+        foreach (var entry in ViewBag.tddata)
+        {
+            //we have entry and that entry will be the trace of now
+            //so we will put all the x y and z of the data in 3 variables we will
+
+            <script>
+                var name1 = '@entry.Key';
+                var mx = [];
+                var my = [];
+                var mz = [];
+                console.log(name1)
+            </script>
+            for (int i = 0; i < entry.Value[0].Count; i++)
+            {
+                <script>
+                    mx.push(parseFloat('@entry.Value[0][i]', 10));
+                    my.push(parseFloat('@entry.Value[1][i]', 10));
+                    mz.push(parseFloat('@entry.Value[2][i]', 10));
+                </script>
+            }
+
+            <script>
+                console.log({
+                    x: mx, y: my, z: mz,
+                    name: name1,
+                    mode: 'markers',
+                    marker: {
+                        size: 12,
+                        line: {
+                            color: 'rgba(' + (Math.floor(Math.random() * 100)) % 255 + ',' + (Math.floor(Math.random() * 100)) % 255 + ',' + (Math.floor(Math.random() * 100)) % 255 + ', 0.14)',
+                            width: 0.5
+                        },
+                        opacity: 0.8
+                    },
+                    type: 'scatter3d'
+                });
+
+                data.push({
+                    x: mx, y: my, z: mz,
+                    name: name1,
+                    mode: 'markers',
+                    marker: {
+                        size: 12,
+                        line: {
+                            color: 'rgba(' + (Math.floor(Math.random() * 100)) % 255 + ',' + (Math.floor(Math.random() * 100)) % 255 + ',' + (Math.floor(Math.random() * 100)) % 255+', 0.14)',
+                            width: 0.5
+                        },
+                        opacity: 0.8
+                    },
+                    type: 'scatter3d',
+                    hoverinfo: "text",
+                    text: name1
+                });
+            </script>
+        }
+
+        <script>
+            var layout = {
+                scene: {
+                    xaxis: { title: '@ViewBag.xselected' },
+                    yaxis: { title: '@ViewBag.yselected' },
+                    zaxis: {title:'@ViewBag.zselected'}
+                },
+                dragmode: false,
+
+                margin: {
+                    l: 0,
+                    r: 0,
+                    b: 0,
+                    t: 0
+                }
+            };
+            Plotly.newPlot('myDiv', data, layout, { showSendToCloud: true });
+        </script>
+
+
+
+    }
+}

@@ -1,0 +1,182 @@
+﻿
+@{
+    ViewBag.Title = "Spline";
+}
+
+<form action="/Main/Spline" method="post">
+    <div class="column_section">
+        <div class="input-group mb-3 scatter_section">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="xaxis">X-axis</label>
+            </div>
+
+            <select name="xaxis_select" class="custom-select" id="xaxis">
+                <!--ONLY  the numbers, so integer or double only-->
+                @{
+                    for (int i = 0; i < ViewBag.Labels.Count; i++)
+                    {
+                        if (ViewBag.datatype[i] == "Integer" || ViewBag.datatype[i] == "Double" || ViewBag.datatype[i] == "Date")
+                        {
+                            <option value="@ViewBag.Labels[i]">@ViewBag.Labels[i]</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="input-group mb-3 scatter_section">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="yaxis">Y-axis</label>
+            </div>
+            <select class="custom-select" name="yaxis_select" id="yaxis">
+                <!--ONLY  the numbers, so integer or double only-->
+
+                @{
+                    for (int i = 0; i < ViewBag.Labels.Count; i++)
+                    {
+                        if (ViewBag.datatype[i] == "Integer" || ViewBag.datatype[i] == "Double")
+                        {
+                            <option value="@ViewBag.Labels[i]">@ViewBag.Labels[i]</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div>
+            <label>
+                Enter Range:
+            </label>
+        </div>
+        <div class="input-group mb-3 scatter_section">
+            <input type="text" class="form-control" id="strange" name="strange" value="1" />
+            <input type="text" class="form-control" id="endrange" name="endrange" value="@ViewBag.datalen" />
+
+        </div>
+    </div>
+    <button style="margin-top:20px;width:100%;" type="submit" class="btn btn-primary" id="subButton">Submit</button>
+</form>
+<button style="margin-top:20px;width:100%" onclick="window.location.href = '/Main/Plot'" class="btn btn-primary" id="sub7Button">Back</button>
+<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+
+@{
+    if (ViewBag.splotflag3 != null && ViewBag.splotflag3 == true)
+    {
+        //now just plot the graph
+        <script type="text/javascript">
+            window.onload = function () {
+        var a = "@ViewBag.DataPoints";
+                var arr = JSON.parse(a.replace(/&quot;/g, '"'));
+                function SortByX(X, Y) {
+                    return X.x - Y.x;
+                }
+                arr.sort(SortByX);
+        var chart = new CanvasJS.Chart("chartContainer", {
+            exportFileName: "Spline Area Chart",
+            exportEnabled: true,
+            title: {
+                text: "Spline Area Chart"
+            },
+            animationEnabled: true,
+            axisY: {
+                title: "@ViewBag.ya",
+                valueFormatString: "#0,,.",
+                suffix: " m"
+            },
+            data: [
+			{
+			    toolTipContent: "{y} @ViewBag.ya",
+			    type: "splineArea",
+			    markerSize: 5,
+			    color: "rgba(54,158,173,.7)",
+			    /*dataPoints: [
+				{ x: new Date(1992, 0), y: 2506000 },
+				{ x: new Date(1993, 0), y: 2798000 },
+				{ x: new Date(1994, 0), y: 3386000 },
+				{ x: new Date(1995, 0), y: 6944000 },
+				{ x: new Date(1996, 0), y: 6026000 },
+				{ x: new Date(1997, 0), y: 2394000 },
+				{ x: new Date(1998, 0), y: 1872000 },
+				{ x: new Date(1999, 0), y: 2140000 },
+				{ x: new Date(2000, 0), y: 7289000 },
+				{ x: new Date(2001, 0), y: 4830000 },
+				{ x: new Date(2002, 0), y: 2009000 },
+				{ x: new Date(2003, 0), y: 2840000 },
+				{ x: new Date(2004, 0), y: 2396000 },
+				{ x: new Date(2005, 0), y: 1613000 },
+				{ x: new Date(2006, 0), y: 2821000 },
+				{ x: new Date(2007, 0), y: 2000000 },
+				{ x: new Date(2008, 0), y: 1397000 }
+			    ],*/
+
+			    //You can add dynamic data from the controller as shown below. Check the controller and uncomment the line which generates dataPoints.
+			    dataPoints: arr,
+			}
+            ]
+        });
+
+        chart.render();
+    };
+        </script>
+    }
+}
+
+@if (ViewBag.splotflag3 == true)
+{
+    if (Request.IsAuthenticated)
+    {
+        <div class="row" style="margin:5px;">
+            <div class="col-lg-3">
+                <input type="text" id="title" placeholder="Title" />
+            </div>
+            <div class="col-lg-3">
+<textarea id="desc" placeholder="Description" rows="1"></textarea>
+            </div>
+            <div class="col-lg-2">
+                <input type="button" id="btnSave" class="btn btn-primary" value="save" />
+            </div>
+        </div>
+    }
+    <div class="row">
+        <form action="/Main/Normalize" method="get" style="margin-right:10px;">
+            <input type="text" value="Spline" name="p1" hidden>
+            <input type="text" value="splineArea" name="type" hidden>
+            <input type="text" value=@ViewBag.xa name="xaxis" hidden>
+            <input type="text" value=@ViewBag.ya name="yaxis" hidden>
+            <button type="submit" class="btn btn-primary">Normalize</button>
+        </form>
+        <form action="/Main/Transform" method="get">
+            <input type="text" value="Spline" name="pt1" hidden>
+            <input type="text" value="splineArea" name="typet" hidden>
+            <input type="text" value=@ViewBag.xa name="xaxist" hidden>
+            <input type="text" value=@ViewBag.ya name="yaxist" hidden>
+            <button type="submit" class="btn btn-primary" id="b4">Transform</button>
+        </form>
+    </div>
+}
+<script type="text/javascript">
+
+    // Send the canvas image to the server.
+
+    $(function () {
+        $("#btnSave").click(function () {
+            var image = document.getElementsByClassName("canvasjs-chart-canvas")[0].toDataURL("image/png");
+            var intext = document.getElementById("title").value;
+            var descrip = document.getElementById("desc").value;
+            var gtype = "Spline";
+            image = image.replace('data:image/png;base64,', '');
+            $.ajax({
+                type: 'POST',
+                url: '/Main/SaveGraph',
+                data: '{ "imageData" : "' + image + '" , "inText":"' + intext + '","gtype":"' + gtype + '","desc":"' + descrip + '"}',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (msg) {
+                    alert('Image saved successfully !');
+                }
+            });
+            alert("Image saved successfully");
+        });
+    });
+</script>
+
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+

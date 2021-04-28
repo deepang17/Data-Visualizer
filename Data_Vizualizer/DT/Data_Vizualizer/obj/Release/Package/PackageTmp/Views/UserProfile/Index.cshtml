@@ -1,0 +1,97 @@
+﻿@model IEnumerable<Data_Vizualizer.Models.UserTitles>
+
+@{
+    ViewBag.Title = "Index";
+}
+@using Microsoft.AspNet.Identity
+@if (Request.IsAuthenticated)
+{
+    <div class="row">
+        <div class="col-lg-3">
+            <img src="../../Content/Profile/@(User.Identity.Name).jpg?t=@DateTime.Now.Millisecond" onerror="this.src='../../Content/profile.png';" class="rounded float-left" alt="profile photo" style="width:200px;height:200px;margin:20px;border-radius:50%;object-fit:fill;" />
+        </div>
+
+        <div class="col-lg-9">
+            <p style="margin-top:50px;">
+
+                <b style="font-size:24px;">@(User.Identity.Name)</b>
+                <br />
+                <button class="btn" style="background: #50d8af;margin:10px 0px;"><a href="/Manage/Index" style="color:white;text-decoration:none;font-size:20px;">change password</a></button>
+                <br />
+                <form id="uploader">
+                    <input id="fileInput" type="file" value="Select Image" multiple>
+                    <input type="submit" value="Upload Image" class="btn" style="background: #0c2e8a;margin:10px 0px;color:white;" />
+                </form>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            document.getElementById('uploader').onsubmit = function () {
+                var formdata = new FormData(); //FormData object
+                var fileInput = document.getElementById('fileInput');
+                //Iterating through each files selected in fileInput
+                for (i = 0; i < fileInput.files.length; i++) {
+                    //Appending each file to FormData object
+                    formdata.append(fileInput.files[i].name, fileInput.files[i]);
+                }
+                //Creating an XMLHttpRequest and sending
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/UserProfile/SaveProfile');
+                xhr.send(formdata);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        alert(xhr.responseText);
+                        window.location.href = "/UserProfile";
+                    }
+                }
+                return false;
+            }
+        }
+    </script>
+
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Type)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            if (User.Identity.Name == item.Name)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Type)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                    </td>
+                </tr>
+            }
+        }
+
+    </table>
+}
+else
+{
+    Response.Redirect("~/Account/LogIn?returnUrl=UserProfile");
+}
